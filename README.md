@@ -3,7 +3,7 @@ This repo walks through the concepts discussed and learnt in 5 days workshop by 
 ## DAY-1
 
 
-#### 1. Locating the Microcontroller
+#### 1.  Microcontroller
 This image showcases an Arduino board with the microcontroller circled. This chip is the central processing unit responsible for executing your code and controlling the board's functionalities.
 
 
@@ -39,4 +39,31 @@ Key Takeaways:
 The image illustrates the intricate link between software and hardware in CPU design.
 Starting from high-level code, we traverse down to the physical realization of a RISC-V core, showcasing the different levels of abstraction involved.
 This visual representation helps in understanding how CPU design choices in the hardware description language translate into the physical layout of the silicon chip.
+
+#### Bridging the Gap: From Software to Silicon
+1. Application Software (Top Left):
+Our journey begins with the software applications we use daily.
+These applications, written in languages like C++, Java, or Python, interact with the underlying system through a defined set of instructions.
+2. System Software and Compilation (Top):
+The Operating System (OS) acts as an intermediary, managing system resources and providing an interface for applications to interact with the hardware.
+Compilers translate high-level code (e.g., C++) into lower-level assembly language instructions specific to the target CPU architecture.
+3. Assembly and Machine Code (Middle):
+The Assembler further converts assembly code into binary machine code (0s and 1s) that the hardware can directly understand and execute.
+The Instruction Set Architecture (ISA) serves as the abstract interface between software and hardware, defining the set of instructions a processor can execute.
+4. Hardware Implementation (Bottom):
+  Register Transfer Level (RTL):
+    This stage describes the hardware behavior using a Hardware Description Language (HDL) like Verilog or VHDL. RTL defines the flow of data between registers and the logical operations         performed.
+   
+  Netlist Synthesis:
+    The RTL description is synthesized into a netlist, a detailed representation of the circuit's interconnected components (gates, flip-flops).
+    
+  Physical Design:
+    Finally, the netlist guides the physical placement and routing of transistors and wires on the silicon die, resulting in the tangible hardware that executes the original software             instructions.
+    
+Key Takeaways:
+This diagram highlights the layered abstraction involved in bridging the gap between software and hardware.
+It emphasizes the crucial role of compilers, assemblers, and hardware design tools in translating abstract instructions into physical circuits.
+Understanding this flow provides valuable insights into the relationship between software, hardware, and the underlying computer architecture.
+
+
 
