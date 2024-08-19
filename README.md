@@ -6,12 +6,14 @@ This repo walks through the concepts discussed and learnt in 5 days workshop by 
 #### 1.  Microcontroller
 This image showcases an Arduino board with the microcontroller circled. This chip is the central processing unit responsible for executing your code and controlling the board's functionalities.
 
-
+![1](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d1/d1_sk1/intro/Screenshot%202024-07-13%20095151.png)
 #### 2. Microcontroller Internal Architecture
 This diagram illustrates the internal architecture of a typical microcontroller. Key components include:
 Processor/SoC (System on a Chip): The "brain" of the microcontroller responsible for executing instructions.
 SDRAM (Synchronous Dynamic Random Access Memory): Volatile memory used for temporary data storage while the microcontroller is running.
 Direct I2C, SPI, GPIO, PWM: These are communication protocols and input/output pins that allow the microcontroller to interact with external sensors, actuators, and other devices.
+
+![2](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d1/d1_sk1/intro/Screenshot%202024-07-13%20095251.png)
 
 
 #### 3. Zooming in Microcontroller Die
@@ -21,6 +23,7 @@ GPIO bank: A group of General Purpose Input/Output pins that can be configured a
 SRAM: Static RAM, a type of memory that retains its contents even when power is off, often used for storing critical program data.
 Foundry IP's: Intellectual Property blocks licensed from semiconductor foundries, representing pre-designed and verified circuit modules integrated into the microcontroller.
 Macros: Refers to larger functional blocks within the microcontroller's design, encompassing multiple logic gates and components.
+![3](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d1/d1_sk1/intro/Screenshot%202024-07-13%20095935.png)
 
 
 #### Visualizing a RISC-V CPU Core: From Code to Silicon Layout
@@ -39,6 +42,7 @@ Key Takeaways:
 The image illustrates the intricate link between software and hardware in CPU design.
 Starting from high-level code, we traverse down to the physical realization of a RISC-V core, showcasing the different levels of abstraction involved.
 This visual representation helps in understanding how CPU design choices in the hardware description language translate into the physical layout of the silicon chip.
+![4](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d1/d1_sk1/riscv/Screenshot%202024-07-13%20100329.png)
 
 #### Bridging the Gap: From Software to Silicon
 1. Application Software (Top Left):
@@ -59,7 +63,9 @@ The Instruction Set Architecture (ISA) serves as the abstract interface between 
     
   Physical Design:
     Finally, the netlist guides the physical placement and routing of transistors and wires on the silicon die, resulting in the tangible hardware that executes the original software             instructions.
-    
+    ![5](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d1/d1_sk1/software%20to%20hardware/Screenshot%202024-07-13%20104219.png)
+![6](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d1/d1_sk1/software%20to%20hardware/Screenshot%202024-07-13%20104157.png)
+![7](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d1/d1_sk1/software%20to%20hardware/Screenshot%202024-07-13%20100706.png)
 Key Takeaways:
 This diagram highlights the layered abstraction involved in bridging the gap between software and hardware.
 It emphasizes the crucial role of compilers, assemblers, and hardware design tools in translating abstract instructions into physical circuits.
