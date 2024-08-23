@@ -838,140 +838,412 @@ for more controls use these commands:
     1. Move your cursor to the cell of interest.
     2. Press `S` to select the cell.
     3. In the `tkcon` window, enter the command `what` to display cell details.
+## **DAY 3 - Design Library Cell using MAGIC layout and ngspice characterization**
 
-## Day 3
-### SK1- Lecture0 (LAB)
+### LAB
+Floorplan variables like *core utilization* and *IO Mode* can be altered even during the flow, so modifications to the design are relatively easy. 
 
-#### Configuring Parameters and Visualizing Results
+For this analysis, the design of an inverter cell is used, and spice analysis is performed on it. In order to do this, the Github respository containing the design and specification files is cloned by the command :
 
-This set of screenshots demonstrates how floorplanning parameters can be customized in OpenLANE using Tcl variables and how the resulting floorplan is visualized for a picorv32a design.
+```
+git clone https://github.com/nickson-jose/vsdstdcelldesign.git
+```
+The inverter design file from the cloned repository is then opened using the **MAGIC** tool, as shown
 
-Screenshot 1 (Floorplan Configuration):
+![Screenshot 2024-08-18 122355](https://github.com/user-attachments/assets/4feb815b-092d-463e-ad84-103ca069cf92)
 
-Tcl Variables: Shows a section of a Tcl configuration file (config.tcl or similar) dedicated to floorplanning settings.
+The upper half of the shown diagram is the PMOS, with the nwell surrounding it, and the lower half is the NMOS. This can be verified from the *tckon* window as well, by running the following commands :
+```
+Hover the mouse over the component in question
+Click 's' to select the component
+Open the tckon window and type 'what'
+```
+![Screenshot 2024-08-18 061912](https://github.com/user-attachments/assets/d46f33de-2bc1-4f18-a491-778b7b0e467b)
 
-Key Parameters:
+Now in the *tckon* window, the following commands are used to exctract the spice file for this design
+```
+extract all
+ext2spice cthresh 0 rthresh 0
+ext2spice
+```
+Now in the library, the spice file has been generated in the same folder as shown in the highlighted lines.
 
-1. FP_IO_VMETAL, FP_IO_HMETAL: Specify metal layers for vertical and horizontal IO connections.
-2. FP_SIZING, FP_CORE_UTIL, FP_ASPECT_RATIO: Control overall floorplan sizing, core utilization, and aspect ratio.
-3. FP_PDN_* variables: Define parameters related to the power distribution network (PDN) like offsets, pitches, and adjustments.
-4. FP_IO_MODE, FP_IO_HLENGTH, etc.: Configure input/output (IO) placement parameters.
+![Screensho![Screenshot 2024-08-18 123409](https://github.com/user-attachments/assets/45b2b846-5d89-4a26-9bed-9025cd79bd51)
+t 2024-08-18 131005](https://github.com/user-attachments/assets/9237ca4f-13ca-41e7-bcd6-274ed8085b84)
 
-![68](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l0-lab/Screenshot%202024-07-15%20192134.jpg)
+Now, opening the spice file from this library :
+
+![Screenshot 2024-08-18 123409](https://github.com/user-attachments/assets/a3647b21-fb6c-4b77-92ec-601ccad1fbd8)
+
+The following changes are made to the file, and the file is saved.
+
+![Screenshot 2024-08-18 133350](https://github.com/user-attachments/assets/0274005b-2651-40c0-9831-4da7a02c4fc6)
+
+**Navigation commands in Vim**
+* Normal mode - ESC
+* Insert mode - i/a/o
+* Search mode - /text_to_be_searched
+* Save and exit mode - :wq!
+
+To simulate the file in ngspice, the following command is used
+```
+ngspice sky130_inv.spice
+```
+
+![Screenshot 2024-08-18 133727](https://github.com/user-attachments/assets/8573b3f0-32ff-47b6-baf5-ddbdf2e392e9)
+
+The results of this simulation are plotted using the command
+```
+plot y vs time a
+```
+
+![Screenshot 2024-08-18 133938](https://github.com/user-attachments/assets/fed0e50a-81d8-4653-ae82-7270a290b8b0)
+
+The inverter characteristics such as *rise time*, *fall time*, *transition time* can be calculated from the graph
+* Rise time - The time taken for the signal to transition from 20% of Vdd to 80% of Vdd (0 -> 1)
+* Fall time - The time taken for the signal to transition from 80% of Vdd to 20% of Vdd (1 -> 0)
+* Transition time - The time difference between input signal attaining 50% of Vdd and output signal attaining 50% of Vdd
+
+For Vdd of 3.3V as chosen, the 20% and 80% values are calculated and respective readings are taken
+
+![Screenshot 2024-08-19 004732](https://github.com/user-attachments/assets/607c5239-841d-492f-a3f6-83d12ea6b04d)
+![Screenshot 2024-08-19 004857](https://github.com/user-attachments/assets/147aead5-84e8-4ebc-8dc2-93b069ba4919)
+
+![Screenshot 2024-08-19 004605](https://github.com/user-attachments/assets/0da754fe-ce1c-4b45-918f-a9d7641b2f15)
+
+Calculating from the observed values, 
+* **Rise time** - 0.0634ns
+* **Fall time** - 0.0452ns
+* **Transition time** - 0.068ns
+
+In the next set of lab analysis, a set of drc test files are to be imported and unzipped, using the commands
+```
+sudo wget http://opencircuitdesign.com/open_pdks/archive/drc_tests.tgz
+sudo tar xfz drc_tests.tgz
+```
+
+![Screenshot 2024-08-19 014738](https://github.com/user-attachments/assets/9de5fe89-20a7-473b-b087-2d38b17e0e96)
+
+To examine these files using the MAGIC tool
+```
+command magic -d XR
+```
+Now open the *met3.mag* file in MAGIC.
+
+![Screenshot 2024-08-19 015130](https://github.com/user-attachments/assets/cf1191ac-ae44-4324-94ed-05af5b3bed9e)
+
+In order to see the various DRC errors, select a component and type 'why' in the *tckon* console
+
+Open the *poly.mag* file. 
+![Screenshot 2024-08-19 021946](https://github.com/user-attachments/assets/687f9867-6f13-4736-96ee-97097b17a9d7)
+
+An attempt to fix one of the errors, poly.9 error, first the participating layers are ascertained as shown. The error lies in the spacing between the two poly layers (*npolyres* and *poly*), which hasn't been defined correctly as an error.
+The spacing is measured to be 0.2 micrometres.
+
+![Screenshot 2024-08-19 021916](https://github.com/user-attachments/assets/9cebbe03-ba0e-4511-bdfd-fec555af213d)
+
+To rectify this, open the *sky130A.tech* file, which is located in the *drc_tests* directory. Make the modifications as shown below and save the file.
+
+![image](https://github.com/user-attachments/assets/1ff3c177-0d19-49d9-b5cc-0b88540384c7)
+
+Reload the *sky130A.tech* file and rerun the DRC check by the commands
+```
+tech load sky130A.tech
+drc check
+```
+
+![Screenshot 2024-08-18 152005](https://github.com/user-attachments/assets/fb2622a1-bf85-41f5-af5d-86c9568c96b5)
+
+Now the poly.9 shows an error upon DRC check.
+In this next analysis to show a DRC error as a geometric construct. Open *nwell.mag* and execute the following commands in the *tckon* console.
+
+```
+cif ostyle drc
+cif see dnwell_shrink
+```
+* nwell.mag
+![Screenshot 2024-08-18 162417](https://github.com/user-attachments/assets/8cb9a2c2-be07-4468-af99-03555ad353fe)
+
+With respect to nwell.6, the error in the poly layer acting as a boundary, and specifically, the dimensions of this boundary violating the tech specifications. 
+
+![Screenshot 2024-08-18 154244](https://github.com/user-attachments/assets/612f06ae-dc1a-401f-802f-c662ec33d9fb)
+
+Once again open *sky130A.tech*, search for 'drc', and make the following changes
+
+![Screenshot 2024-08-18 162155](https://github.com/user-attachments/assets/aabbcbca-1eab-4563-b8be-4b77ae168f84)
+
+After altering the tech file, once again open the *tckon* console and enter the following commands to see the results
+```
+drc check
+drc style drc(full)
+drc check
+```
+
+## **DAY 4 - Pre-layout Analysis and importance of good Clock Tree**
+
+### LAB
+
+In order to perform PnR (Placement and Routing), all the information present in a layout file is not necessary. A *.lef* file is extracted from the inverter layout file. This is in order to make it into a standard cell that can be implemented in other designs as well.
+
+Some primary requirements for PnR are :
+1. The I/O ports must be present at the junctions where the vertical and horizontal tracks intersect.
+2. The standard cell's width should be an odd multiple of the track's horizontal pitch.
+3. The standard cell's height must be an odd multiple of the track's vertical pitch.
+
+**Steps to convert grid info to track info**
+Open the custom inverter layout, from the *vsdstdcelldesign* library in MAGIC using the command
+```
+magic -T sky130A.tech sky130_inv.mag &
+```
+![image](https://github.com/user-attachments/assets/b36708d1-2a9f-4210-8565-f29363a28b18)
+
+In the *tckon* console, type the command 
+```
+grid 0.46um 0.34um 0.23um 0.17um
+```
+![image](https://github.com/user-attachments/assets/b3057a36-9e4b-497d-8fed-4f21908acedc)
+
+From expanding this layout view, it is seen that the li1 layer is completely on the grid layer. The inout and output ports lie on the intersections of vertical and horizontal tracks. Moreover, the width of the standard cell is seen to be 3 grid/track boxes. Thus all the requisite conditions are satisfied. 
+
+**Converting MAGIC layout to a standard cell LEF**
+First port definitions are created by selecting the port, going to file -> text, and entering details.
+
+![image](https://github.com/user-attachments/assets/5a38e27a-ef98-4885-964c-e732d0fbf6a8)
+
+Next the port class and port use attributes are set, in order to define the purpose of the port, using the commands 
+```
+# confirm the port
+what
+# define the port class and use
+port class input
+port use signal
+```
+This is repeated for all the ports in the layout. Then the *.mag* file is saved using the command in *tckon* :
+```
+save sky130_vsdinv.mag
+```
+![image](https://github.com/user-attachments/assets/916480a1-e14d-4fdd-a810-d9262d006f2a)
+
+Next, the saved *.mag* file is opened using the command in the terminal :
+```
+magic -T sky130A.tech sky130_vsdinv.mag &
+```
+In the *tckon* console, enter the following command to extract the lef file
+```
+lef write
+```
+Now the extracted lef file is visible in the same directory
+![image](https://github.com/user-attachments/assets/7f9b474b-1135-4268-9fc1-c723168c3417)
+
+![image](https://github.com/user-attachments/assets/7c503fa3-243d-4406-a606-a6942e24a9e5)
+
+Now this lef file is copied into the source directory of picorv32a using the command
+```
+cp sky130_vsdinv.lef /home/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src
+```
+From this stage onwards, the standard cell for the inverter is to be included in the picorv32a design. Once again, the first stage is **synthesis**, similar to the execution of Day 1. In order for synthesis to run successfully, the standard cell library files are required. These are copied using the command :
+```
+cp sky130_fd_sc_hd__* /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src
+```
+![image](https://github.com/user-attachments/assets/1d9c07d0-28cc-44ef-8cd7-6e0f3da3f182)
+
+In addition, the *config.tcl* file needs to be modified as shown in the figure below.
+
+![image](https://github.com/user-attachments/assets/5121e4bd-c961-4ab8-a732-dbcb0f29d5ee)
+
+Now once again the docker is invoked and the same steps for synthesis are repeated 
+```
+./flow.tcl
+package require openlane 0.9
+prep -design picorv32a -tag -overwrite
+run_synthesis
+```
+![image](https://github.com/user-attachments/assets/e86b3048-673a-4738-a9c2-080717790745)
+
+After synthesis has been run, add the following commands to incorporate the additional lef file into the flow
+```
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]  
+add_lefs -src $lefs
+```
+Once this is done, the OpenLANE flow is continued by running floorplan stage using the command 
+```
+init_floorplan
+place_io
+tap_decap_io
+```
+
+From the results of the synthesis, it is observed that there are 1554 instances of the user defined standard cell **sky130_vsdinv**. 
+Moreover, the chip area is 147712.91
+
+![image](https://github.com/user-attachments/assets/c40e5e3d-1737-4b4a-9d98-c35c743f27d6)
+
+It is also observed that the worst slack is -23.89 and the total negative slack is -711.59. This can be combatted by running timing-driven synthesis.
+In the *README.md* file, a parameter called **SYNTH)_STRATEGY** is defined, whose value specifies the optimization of the syntehsis step
+
+* 0/1 - Delay driven
+* 2/3 - Area driven
+
+The variable is checked with the command 
+```
+echo $::env(SYNTH STRATEGY)
+```
+In this case te synthesis is already delay drive, so no changes need to be made. 
+Next step is placement, using the command
+```
+run_placement
+```
+![image](https://github.com/user-attachments/assets/8bcd7853-11d1-4dbe-b61f-31f401f515f8)
+![Screenshot 2024-08-20 012632](https://github.com/user-attachments/assets/06d3fafb-1c7f-4607-b691-bc4ecdc071ae)
+
+Now placement has been succesfully run.
+Moreover, it is seen that the total negative slack is 0, which indicates no **slack violation**
+
+Now to view the user defined cell inside the design, once again the MAGIC tool is utilized. Enter the following commands 
+```
+cd /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/17-08_06-08/results/placement
+magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def &
+```
+
+![Screenshot 2024-08-20 021758](https://github.com/user-attachments/assets/b31edd2d-edc9-4f8c-89dc-b8b05f6044a8)
+
+![image](https://github.com/user-attachments/assets/f6a64d92-a812-4dce-a8c3-05fa40720ccd)
+
+As shown, the user defined standard cell is present within the picorv32a design. 
+
+**Static Timing Analysis**
+Post floorplanning and placement, Static Timing Analysis is conducted to examine the proper fucntionality of the cell without any timing violations.
+
+An STA config file is created in the directory 
+```
+/home/vsduser/Desktop/work/tools/openlane_working_dir/openlane
+```
+
+![image](https://github.com/user-attachments/assets/ae1c32f6-ff0a-4e03-8e25-b3e2e5dfb428)
+![Screenshot 2024-08-20 032549](https://github.com/user-attachments/assets/725f1972-09fa-4b59-ade1-e8ac741b2401)
+
+An sdc file containing all the specifications is created in the **src** directory of picorv32a
+
+![image](https://github.com/user-attachments/assets/33a2bda6-9027-41a3-838e-a482d7eb9e8f)
+
+Now running STA analysis in openlane by the command
+```
+sta pre_sta.conf
+```
+![image](https://github.com/user-attachments/assets/9509a26a-12e2-4c22-8aeb-5ac69d4c5c8a)
 
 
-Screenshot 2 (Running Floorplan and Visualization):
+The timing details can also be viewed as a result of this operation. Thus the timing requirements are met as shown in the figure.
 
-OpenLANE Log: The terminal displays log messages from an OpenLANE run.
+![image](https://github.com/user-attachments/assets/af2b62da-c46a-4c7f-8689-dd09a7d349cd)
 
-Floorplan Execution: Highlights the execution of the``run_floorplan``, indicating the start of the floorplanning stage.
+Next, the clock tree synthesis and routing is carried out. 
 
-Layout Visualization: Shows OpenLANE invoking a layout viewer (klayout in this case) to display the generated floorplan.
+**Steps to carry out CTS using TritonCTS**
+TritonCTS is the EDA tool that carries out clock tree synthesis. Various CTS variables are present in the *README.md* file in configuration directory
 
-    set  ::env(FP_IO_MODE) 2
-    run_floorplan
+To rewrite the verilog file post synthesis, the command
+```
+write_verilog /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/17-08_06-08/results/synthesis/picorv32a.synthesis.v
+```
+Now, returning to the OpenLANE docker, after having rewritten the verilog file, floorplan is run using the commands
+```
+init_floorplan
+place_io
+tap_decap_or
+```
 
-![69](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l0-lab/Screenshot%202024-07-15%20192348.jpg)
+![Screenshot 2024-08-20 093821](https://github.com/user-attachments/assets/328d5575-321b-4504-92ff-5c27ad4ee283)
 
-Screenshot 3 (Floorplan Visualization):
+Next run placement using the command
 
-1. Layout Viewer Display: Presents the visualized floorplan within the layout viewer.
-2. Core Area: A central rectangular area represents the core of the design where standard cells are placed.
-3. IO Pads: There might be regions around the core dedicated to IO pads for external connections.
-4. Power Grid: A grid-like structure might be visible, indicating the power distribution network.
+```
+run_placement
+```
+![image](https://github.com/user-attachments/assets/d395516c-89ba-4214-96c9-5cc13ee1a5e1)
 
-Here the IO Pin arrangement is changed now to 2
-previouly it was set to 1 as default and was divided in equal manner
+```
+run_cts
+```
 
-![70](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l0-lab/Screenshot%202024-07-16%20001813.jpg)
+![image](https://github.com/user-attachments/assets/fe48f074-9b10-4734-8e17-9d355cb3eccf)
 
-### lab ss
+In this stage, the clock buffers get added, which changes the netlist. After this step, a new *.cts* file has been created to the synthesis directory, containing details of the previous netlist as well as clock buffers added in this stage.
 
-![71](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l0-lab/Screenshot%202024-07-15%20192134.jpg)
-![72](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l0-lab/Screenshot%202024-07-15%20192348.jpg)
-![73](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l0-lab/Screenshot%202024-07-16%20001813.jpg)
+**Timing Analysis using OpenSTA**
+For timing analysis, first the database containing ass lef and def files is created by the following commands.
+```
+read_lef /openLANE_flow/designs/picorv32a/runs/17-08_06-08/tmp/merged.lef
+read_def /openLANE_flow/designs/picorv32a/runs/17-08_06-08/results/cts/picorv32a.cts.def
+```
 
+![image](https://github.com/user-attachments/assets/eb5f0839-f2ba-41d3-835c-6cadd0bda15c)
 
-[74](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l5-lab/Screenshot%202024-07-16%20180433.jpg)
-[75](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l5-lab/Screenshot%202024-07-16%20181101.jpg)
-![76](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk1/l5-lab/Screenshot%202024-07-16%20181716.jpg)
+![image](https://github.com/user-attachments/assets/319f4ae1-4e81-4a5a-9ca6-3af9ee6671b7)
 
-![77](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk2/l8-lab/Screenshot%202024-07-16%20194152.jpg)
-![78](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk2/l8-lab/Screenshot%202024-07-16%20194927.jpg)
-![79](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk2/l8-lab/Screenshot%202024-07-16%20195314.jpg)
-![80](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk2/l8-lab/Screenshot%202024-07-16%20195418.jpg)
-![81](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk2/l8-lab/Screenshot%202024-07-16%20195440.jpg)
-![82](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk2/l8-lab/Screenshot%202024-07-16%20195615.jpg)
+```
+read_db pico_cts.db
+read_verilog /openLANE_flow/designs/picorv32a/runs/26-07_10-33/results/synthesis/picorv32a.synthesis_cts.v
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+read_sdc /openLANE_flow/designs/picorv32a/src/my_base.sdc
+set_propagated_clock [all_clocks]
+report_checks -path_delay min_max -format full_clock_expanded -digits 4
+```
 
-![83](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l1-lab/Screenshot%202024-07-16%20225203.jpg)
-![84](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l1-lab/Screenshot%202024-07-16%20231009.jpg)
+![image](https://github.com/user-attachments/assets/82c2069a-3c28-4f1a-b35c-7d57ad93eb9a)
 
-![85](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l2-lab/Screenshot%202024-07-16%20231111.jpg)
-![86](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l2-lab/Screenshot%202024-07-16%20233040.jpg)
-![87](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l2-lab/Screenshot%202024-07-16%20233138.jpg)
-![88](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l2-lab/Screenshot%202024-07-16%20233214.jpg)
-![89](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l2-lab/Screenshot%202024-07-16%20233227.jpg)
-![90](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l2-lab/Screenshot%202024-07-17%20091821.jpg)
-![91](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l2-lab/Screenshot%202024-07-17%20091937.jpg)
+![image](https://github.com/user-attachments/assets/0d4ef0a0-7ca2-487b-a172-ef9bf5a4f79c)
+Here it is also seen that the slack in the hold time is satisfactorily met.
 
-![92](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l4/Screenshot%202024-07-17%20094827.jpg)
+**Steps to execute OpenSTA with the right timing libraries and CTS assignment**
 
+Exit from openroad. Check the buffers utilized in the CTS netlist using the command
+```
+echo $::env(CTS_CLK_BUFFER_LIST)
+```
+![image](https://github.com/user-attachments/assets/1117b7dd-6efe-4d23-9033-ba1b16b25581)
 
-![93](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l5/Screenshot%202024-07-17%20095021.jpg)
-![94](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l5/Screenshot%202024-07-17%20095150.jpg)
-![95](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l5/Screenshot%202024-07-17%20095515.jpg)
-![96](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l5/Screenshot%202024-07-17%20104547.jpg)
-![97](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l5/Screenshot%202024-07-17%20104857.jpg)
+## **DAY 5 - Final steps for RTL2GDS using tritonRoute and openSTA**
 
+**Building a power distribution network for the design**
 
-![98](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l6/Screenshot%202024-07-17%20105212.jpg)
-![99](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l6/Screenshot%202024-07-17%20105459.jpg)
-![100](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l6/Screenshot%202024-07-17%20110530.jpg)
-![101](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l6/Screenshot%202024-07-17%20124417.jpg)
-![102](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l6/Screenshot%202024-07-17%20130015.jpg)
+After the CTS has been generated, a power distribution netowkr (PDN) is created (in OpenLANE, exit openroad) for the design before routing is begun. Using the following command
+```
+gen_pdn
+```
+![image](https://github.com/user-attachments/assets/71ca1bba-f9db-49c2-9905-dd374d2db526)
 
-![103](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l8/Screenshot%202024-07-17%20130236.jpg)
-![104](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l8/Screenshot%202024-07-17%20131022.jpg)
+Once the PDN has been successfully generated, the design can now be routed.The grid and straps for power and ground have been created.  
 
-![105](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l9/Screenshot%202024-07-17%20131333.jpg)
-![106](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d3/sk3/l9/Screenshot%202024-07-17%20132659.jpg)
+![image](https://github.com/user-attachments/assets/479c88a5-93e6-48b5-8948-0a9fe3d15696)
 
-![107](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l1/Screenshot%202024-07-17%20134745.jpg)
-![108](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l1/Screenshot%202024-07-17%20135120.jpg)
-![109](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l1/Screenshot%202024-07-17%20135153.jpg)
+The details pertaining to routing variables can be found in the *README.md* in the configuration directory. Run the following command for routing
+```
+run_routing
+```
 
-![110](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l2/Screenshot%202024-07-17%20143612.jpg)
-![111](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l2/Screenshot%202024-07-17%20144255.jpg)
-![112](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l2/Screenshot%202024-07-17%20144434.jpg)
-![113](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l2/Screenshot%202024-07-17%20144826.jpg)
+![image](https://github.com/user-attachments/assets/ec97b4bd-0847-4872-8768-2f26896b21e1)
+The design has been routed successfully. To view the final results, which include the *parasitic extraction file* *.spef*, go to the following directory
+```
+/home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/20-08_05-43/routing
+```
 
-![114](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l3/Screenshot%202024-07-17%20172332.jpg)
-![115](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l3/Screenshot%202024-07-17%20172632.jpg)
-![116](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l3/Screenshot%202024-07-17%20195920.jpg)
+![image](https://github.com/user-attachments/assets/77d9d00a-d793-4c89-9897-64b58ca66b55)
 
-![117](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l7/Screenshot%202024-07-17%20202309.jpg)
-![118](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l7/Screenshot%202024-07-18%20113833.jpg)
-![119](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk1/l7/Screenshot%202024-07-18%20113847.jpg)
+To view the final layout, use the command 
+```
+magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.def
+```
+![image](https://github.com/user-attachments/assets/499d28b2-a518-4a8d-a9d2-d307607c5a4c)
 
-![120](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk2/l3/Screenshot%202024-07-18%20114938.jpg)
-![121](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk2/l3/Screenshot%202024-07-18%20115652.jpg)
-![122](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk2/l3/Screenshot%202024-07-18%20122737.jpg)
-![123](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk2/l3/Screenshot%202024-07-18%20122755.jpg)
+This design successfuly incorporated the user defined inverter standard cell. A zoomed in image of the design with the standard inverter cell highlighted is shown below.
 
+![image](https://github.com/user-attachments/assets/743d5113-1c95-41bd-8530-a82a2dc96a40)
 
-![124](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk3/l3/Screenshot%202024-07-18%20124212.jpg)
-![125](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk3/l3/Screenshot%202024-07-18%20124334.jpg)
-![126](https://github.com/fortunespell/Nasscom-VSD-vlsi/blob/main/vsd/d4/sk3/l3/Screenshot%202024-07-18%20124437.jpg)
+## REFERENCES
+* [VSD Standard Cell Design](https://github.com/nickson-jose/vsdstdcelldesign.git)
+* [Google Skywater PDK](https://skywater-pdk.readthedocs.io/en/main/index.html)
 
-
-![Screenshot 2024-07-23 171002](https://github.com/user-attachments/assets/8d6eda4d-5aa6-4d4e-ba5b-742acb3864bf)
-![Screenshot 2024-07-23 170619](https://github.com/user-attachments/assets/a653c05e-5740-4b73-b1b4-454cedaabeaf)
-
-
-
-
-
-
-
-
+## Acknowledgements
+* **Kunal Ghosh**, Co founder (VSD Corp. Pvt. Ltd)
+* **Nickson P Jose**, Teaching Assistant (VSD Corp. Pvt. Ltd.)
 
